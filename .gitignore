@@ -2,3 +2,5 @@
 DataFrame Aggregation - HandsOn and Dataset/
 DataFrame Combination - HandsOn dan Dataset/
 **.ipynb
+.env/
+.DS_Store
