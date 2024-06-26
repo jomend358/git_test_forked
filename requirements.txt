@@ -1,3 +1,4 @@
 pandas 
 skit-learn 
 edit by jomen
+edit lagi by jomen
