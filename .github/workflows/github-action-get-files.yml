@@ -36,10 +36,12 @@ jobs:
       - name: Get all added/modified files as CSV
         id: added-modified-files
         uses: jitterbit/get-changed-files@v1
+        with:
+          format: 'space-delimited'
 
       - name: Process added/modified files
         run: |
-          mapfile -d ',' -t added_modified_files < <(printf '%s,' '${{ steps.added-modified-files.outputs.added_modified }}')
+          IFS=' ' read -r -a added_modified_files <<< "${{ steps.added-modified-files.outputs.added_modified }}"
           for added_modified_file in "${added_modified_files[@]}"; do
             echo "Do something with this ${added_modified_file}."
           done
