@@ -15,20 +15,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # -----------------------------------------------------------------------------------------------------------
-      # Example 1
-      # -----------------------------------------------------------------------------------------------------------
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v44
-        # To compare changes between the current commit and the last pushed remote commit set `since_last_remote_commit: true`. e.g
-        # with:
-        #   since_last_remote_commit: true 
 
-      - name: List all changed files
+      - name: List and save all changed files to CSV
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
+          # Create output directory if it doesn't exist
+          mkdir -p output
+          
+          # Specify the CSV file path in the output directory
+          CSV_FILE="output/changed_files.csv"
+          
+          # Add header to CSV file
+          echo "File Path" > $CSV_FILE
+          
+          # Append each changed file path to the CSV file
           for file in ${ALL_CHANGED_FILES}; do
-            echo "$file was changed"
+            echo "$file" >> $CSV_FILE
           done
+
+      - name: Upload CSV file as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: changed-files
+          path: output/changed_files.csv
