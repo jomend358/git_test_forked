@@ -41,8 +41,14 @@ jobs:
         run: |
           git config --local user.name "github-actions"
           git config --local user.email "actions@github.com"
+          
+          # Checkout the branch that triggered the workflow
+          git checkout ${{ github.head_ref }}
+          
           git add models_cross_project/list_of_changed_files.csv
           git commit -m "Add list of changed files"
-          git push
+          
+          # Push the changes to the branch
+          git push origin HEAD:${{ github.head_ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
