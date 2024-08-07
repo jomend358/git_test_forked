@@ -51,7 +51,7 @@ jobs:
             # Example placeholder for alerting mechanism
             curl -X POST -H 'Content-Type: application/json' \
               -d '{"text": "Matches found in changed files: '"$MATCHES"'"}' \
-              ${{ secrets.MODELS_CROSS_PROJECT }}
+              "${{ secrets.MODELS_CROSS_PROJECT }}"
           else
             echo "No matches found."
           fi
