@@ -19,7 +19,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v44
 
-      - name: List and save all changed files to CSV
+      - name: Process and save changed files to CSV
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
@@ -30,13 +30,11 @@ jobs:
           CSV_FILE="models_cross_project/list_of_changed_files.csv"
           
           # Add header to CSV file
-          echo "File Path" > $CSV_FILE
+          echo "changed_files" > $CSV_FILE
           
-          # Append each changed file path to the CSV file
-          for file in ${ALL_CHANGED_FILES}; do
-            echo "$file" >> $CSV_FILE
-          done
-
+          # Process each changed file path: remove path, extensions, and avoid duplicates
+          echo "${ALL_CHANGED_FILES}" | tr ' ' '\n' | awk -F/ '{print $NF}' | awk -F. '{print $1}' | sort | uniq >> $CSV_FILE
+          
       - name: Commit and push changes
         run: |
           git config --local user.name "github-actions"
