@@ -1,5 +1,6 @@
-select *
-from public.rakamin_customer_address
-where lower(kota) in ('jakarta timur', 'jakarta utara', 'jakarta barat')
-	and (alamat = 'TMII' or alamat = 'Jatinegara' or alamat = 'Kalideres')
+SELECT *
+FROM public.rakamin_customer_address
+WHERE 
+	LOWER(kota) IN ('jakarta timur', 'jakarta utara', 'jakarta barat')
+	AND (alamat = 'TMII' OR alamat = 'Jatinegara' OR alamat = 'Kalideres')
 ;
