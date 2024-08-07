@@ -1,4 +1,4 @@
-name: CI
+{# name: CI
 
 on:
   pull_request:
@@ -49,4 +49,4 @@ jobs:
           # Push the changes to the branch
           git push origin HEAD:${{ github.head_ref }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} #}
