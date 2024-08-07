@@ -34,14 +34,24 @@ jobs:
 
       - name: Compare with static list
         run: |
+          # Define paths for the static and generated CSV files
           STATIC_LIST="cross_project/list_of_cross_model.csv"
           CHANGED_LIST="models_cross_project/list_of_changed_files.csv"
-          MATCHES=$(grep -F -f $STATIC_LIST $CHANGED_LIST)
+          
+          # Extract columns from both CSV files, ignoring headers
+          STATIC_MODELS=$(tail -n +2 $STATIC_LIST)
+          CHANGED_MODELS=$(tail -n +2 $CHANGED_LIST)
+          
+          # Find matches between static models and changed models
+          MATCHES=$(echo "$CHANGED_MODELS" | grep -F -x -f <(echo "$STATIC_MODELS"))
 
           if [ -n "$MATCHES" ]; then
+            echo "Found matches: $MATCHES"
+
+            # Example placeholder for alerting mechanism
             curl -X POST -H 'Content-Type: application/json' \
               -d '{"text": "Matches found in changed files: '"$MATCHES"'"}' \
-              ${{ secrets.MODELS_CROSS_PROJECT }}
+              ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
           else
             echo "No matches found."
           fi
