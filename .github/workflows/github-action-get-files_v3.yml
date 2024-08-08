@@ -35,7 +35,7 @@ jobs:
       - name: Compare with static list
         run: |
           # Define paths for the static and generated CSV files
-          STATIC_LIST="cross_project/list_of_cross_model.csv"
+          STATIC_LIST="cross_project/list_of_cross_model_v3.csv"
           CHANGED_LIST="models_cross_project/list_of_changed_files.csv"
           
           # Extract columns from both CSV files, ignoring headers
