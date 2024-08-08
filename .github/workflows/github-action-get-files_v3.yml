@@ -55,7 +55,7 @@ jobs:
 
             while IFS=',' read -r model reference origin_repo; do
               if echo "$MATCHES" | grep -q "$model"; then
-                MESSAGE+="* $model that referred in $reference (origin repo: $origin_repo)\n"
+                MESSAGE+="* $model that referred in $reference (origin repo is $origin_repo)\n"
               fi
             done < <(tail -n +2 $STATIC_LIST)
 
