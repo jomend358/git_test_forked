@@ -39,7 +39,7 @@ jobs:
           CHANGED_LIST="models_cross_project/list_of_changed_files.csv"
           
           # Extract columns from both CSV files, ignoring headers
-          STATIC_MODELS=$(tail -n +2 $STATIC_LIST)
+          STATIC_MODELS=$(tail -n +2 $STATIC_LIST | cut -d',' -f1)
           STATIC_REFERENCES=$(tail -n +2 $STATIC_LIST | cut -d',' -f2)
           CHANGED_MODELS=$(tail -n +2 $CHANGED_LIST)
           
