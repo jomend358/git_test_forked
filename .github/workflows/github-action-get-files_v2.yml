@@ -32,6 +32,9 @@ jobs:
           CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
           CHANGED_MODELS=$(echo "$CHANGED_FILES" | tr ' ' '\n' | awk -F/ '{print $NF}' | awk -F. '{print $1}' | sort | uniq)
           
+          # Re-initialized MATCHES to an empty string before finding the matches
+          MATCHES=""
+
           # Find matches between static models and changed models
           MATCHES=$(echo "$CHANGED_MODELS" | grep -F -x -f <(echo "$STATIC_MODELS"))
 
