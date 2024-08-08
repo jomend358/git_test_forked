@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  compare_files:
+    runs-on: ubuntu-latest
+    name: Check models cross project
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+
+      - name: Process and save changed files to CSV
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          # Create the directory if it doesn't exist
+          mkdir -p models_cross_project
+          
+          # Specify the CSV file path in the models_cross_project directory
+          CSV_FILE="models_cross_project/list_of_changed_files.csv"
+          
+          # Add header to CSV file
+          echo "changed_files" > $CSV_FILE
+          
+          # Process each changed file path: remove path, extensions, and avoid duplicates
+          echo "${ALL_CHANGED_FILES}" | tr ' ' '\n' | awk -F/ '{print $NF}' | awk -F. '{print $1}' | sort | uniq >> $CSV_FILE
+
+      - name: Compare with static list
+        run: |
+          # Define paths for the static and generated CSV files
+          STATIC_LIST="cross_project/list_of_cross_model.csv"
+          CHANGED_LIST="models_cross_project/list_of_changed_files.csv"
+          
+          # Extract columns from both CSV files, ignoring headers
+          STATIC_MODELS=$(tail -n +2 $STATIC_LIST)
+          STATIC_REFERENCES=$(tail -n +2 $STATIC_LIST | cut -d',' -f2)
+          CHANGED_MODELS=$(tail -n +2 $CHANGED_LIST)
+          
+          # Find matches between static models and changed models
+          MATCHES=$(echo "$CHANGED_MODELS" | grep -F -x -f <(echo "$STATIC_MODELS"))
+
+          if [ -n "$MATCHES" ]; then
+            echo "Found matches: $MATCHES"
+
+            PR_LINK="${{ github.event.pull_request.html_url }}"
+            MESSAGE="Matches found. Please check this PR: $PR_LINK.\nModels that are used in cross project have been changed:\n"
+
+            while IFS=',' read -r model reference; do
+              if echo "$MATCHES" | grep -q "$model"; then
+                MESSAGE+="$model that referred in $reference\n"
+              fi
+            done < <(tail -n +2 $STATIC_LIST)
+
+            curl -X POST -H 'Content-Type: application/json' \
+              -d '{"text": "'"$MESSAGE"'"}' \
+              "${{ secrets.MODELS_CROSS_PROJECT }}"
+          else
+            echo "No matches found."
+          fi
+
