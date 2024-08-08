@@ -50,11 +50,11 @@ jobs:
             echo "Found matches: $MATCHES"
 
             PR_LINK="${{ github.event.pull_request.html_url }}"
-            MESSAGE="Hi @all\nnModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
+            MESSAGE="Hi @all\nModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
 
             while IFS=',' read -r model reference; do
               if echo "$MATCHES" | grep -q "$model"; then
-                MESSAGE+="$model that referred in $reference\n"
+                MESSAGE+="`$model` that referred in $reference\n"
               fi
             done < <(tail -n +2 $STATIC_LIST)
 
