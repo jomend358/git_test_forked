@@ -47,16 +47,21 @@ jobs:
             MESSAGE="Alert V2\nHi <users/all>\nModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
 
             while IFS=',' read -r model reference origin_repo; do
-              if echo "$MATCHES" | grep -q "$model"; then
-                echo "Adding to message: $model referred in $reference (origin repo: $origin_repo)"
-                MESSAGE+="* $model that referred in $reference (origin repo is $origin_repo)\n"
-              fi
+              for changed_model in $CHANGED_MODELS; do
+                if [ "$model" = "$changed_model" ]; then
+                  echo "Adding to message: $model referred in $reference (origin repo: $origin_repo)"
+                  MESSAGE+="* $model that referred in $reference (origin repo is $origin_repo)\n"
+                fi
+              done
             done < <(tail -n +2 $STATIC_LIST)
 
-            curl -X POST -H 'Content-Type: application/json' \
-              -d '{"text": "'"$MESSAGE"'"}' \
-              "${{ secrets.MODELS_CROSS_PROJECT }}"
-          else
-            echo "No matches found."
-          fi
+            echo "Final message: $MESSAGE"
+
+            if [ -n "$MESSAGE" ]; then
+              curl -X POST -H 'Content-Type: application/json' \
+                -d '{"text": "'"$MESSAGE"'"}' \
+                "${{ secrets.MODELS_CROSS_PROJECT }}"
+            else
+              echo "No matches found."
+            fi
 
