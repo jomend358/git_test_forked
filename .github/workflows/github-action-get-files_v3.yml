@@ -15,7 +15,12 @@ jobs:
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v44
+        with:
+          fetch-depth: 2
 
+      - name: Print changed files for debugging
+        run: echo "${{ steps.changed-files.outputs.all_changed_files }}"
+        
       - name: Process and save changed files to CSV
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
