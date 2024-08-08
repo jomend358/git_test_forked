@@ -44,12 +44,12 @@ jobs:
             echo "Found matches: $MATCHES"
 
             PR_LINK="${{ github.event.pull_request.html_url }}"
-            MESSAGE1="Alert V2\nHi <users/all>\nModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
+            MESSAGE="Alert V2\nHi <users/all>\nModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
 
             while IFS=',' read -r model reference origin_repo; do
               if echo "$MATCHES" | grep -q "$model"; then
                 echo "Adding to message: $model referred in $reference (origin repo: $origin_repo)"
-                MESSAGE2+="* $model that referred in $reference (origin repo is $origin_repo)\n"
+                MESSAGE+="* $model that referred in $reference (origin repo is $origin_repo)\n"
               fi
             done < <(tail -n +2 $STATIC_LIST)
 
