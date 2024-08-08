@@ -15,7 +15,12 @@ jobs:
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v44
+        with:
+          fetch-depth: 2
 
+      - name: Print changed files for debugging
+        run: echo "${{ steps.changed-files.outputs.all_changed_files }}"
+        
       - name: Process and save changed files to CSV
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
@@ -41,6 +46,7 @@ jobs:
           # Extract columns from both CSV files, ignoring headers
           STATIC_MODELS=$(tail -n +2 $STATIC_LIST | cut -d',' -f1)
           STATIC_REFERENCES=$(tail -n +2 $STATIC_LIST | cut -d',' -f2)
+          STATIC_ORIGIN_REPOS=$(tail -n +2 $STATIC_LIST | cut -d',' -f3)
           CHANGED_MODELS=$(tail -n +2 $CHANGED_LIST)
           
           # Find matches between static models and changed models
@@ -50,11 +56,11 @@ jobs:
             echo "Found matches: $MATCHES"
 
             PR_LINK="${{ github.event.pull_request.html_url }}"
-            MESSAGE="Hi @all\nnModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
+            MESSAGE="Hi <users/all>\nModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
 
-            while IFS=',' read -r model reference; do
+            while IFS=',' read -r model reference origin_repo; do
               if echo "$MATCHES" | grep -q "$model"; then
-                MESSAGE+="$model that referred in $reference\n"
+                MESSAGE+="* $model that referred in $reference (origin repo is $origin_repo)\n"
               fi
             done < <(tail -n +2 $STATIC_LIST)
 
