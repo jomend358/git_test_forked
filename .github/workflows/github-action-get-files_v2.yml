@@ -54,7 +54,7 @@ jobs:
             done < <(tail -n +2 $STATIC_LIST)
 
             curl -X POST -H 'Content-Type: application/json' \
-              -d '{"text": "'"$MESSAGE2"'"}' \
+              -d '{"text": "'"$MESSAGE"'"}' \
               "${{ secrets.MODELS_CROSS_PROJECT }}"
           else
             echo "No matches found."
