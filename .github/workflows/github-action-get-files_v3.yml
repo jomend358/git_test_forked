@@ -1,4 +1,4 @@
-name: "Cross project models checker"
+name: "Cross project models checker v3"
 
 on:
   pull_request:
@@ -23,7 +23,7 @@ jobs:
         run: |
           # Define paths for the static and generated CSV files
           STATIC_LIST="cross_project/list_of_cross_model_v3.csv"
-          
+
           # Extract columns from both CSV files, ignoring headers
           STATIC_MODELS=$(tail -n +2 $STATIC_LIST | cut -d',' -f1)
           STATIC_REFERENCES=$(tail -n +2 $STATIC_LIST | cut -d',' -f2)
@@ -31,12 +31,12 @@ jobs:
 
           CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
           CHANGED_MODELS=$(echo "$CHANGED_FILES" | tr ' ' '\n' | awk -F/ '{print $NF}' | awk -F. '{print $1}' | sort | uniq)
-          
-          # Re-initialized MATCHES to an empty string before finding the matches
+
+          # Re-initialize MATCHES to an empty string before finding the matches
           MATCHES=""
 
           # Find matches between static models and changed models
-          MATCHES=$(echo "$CHANGED_MODELS" | grep -F -x -f <(echo "$STATIC_MODELS"))
+          MATCHES=$(echo "$CHANGED_MODELS" | grep -F -x -f <(echo "$STATIC_MODELS") || true)
 
           if [ -n "$MATCHES" ]; then
             echo "Found matches: $MATCHES"
@@ -62,5 +62,7 @@ jobs:
             else
               echo "No matches found."
             fi
-          fi
 
+          else
+            echo "No matches found."
+          fi
