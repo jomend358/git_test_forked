@@ -2,3 +2,4 @@ models_used_in_cross_project,referred_in_repo,origin_repo
 jomen_query,repo-a,a-dbt
 jomen_query_v2,repo-b,b-dbt
 jomen_query_v3,repo-a,a-dbt
+rakafood_test_copy,repo-c,c-dbt
