@@ -54,7 +54,7 @@ jobs:
 
             while IFS=',' read -r model reference; do
               if echo "$MATCHES" | grep -q "$model"; then
-                MESSAGE+="$model that referred in $reference\n"
+                MESSAGE+="* $model that referred in $reference\n"
               fi
             done < <(tail -n +2 $STATIC_LIST)
 
