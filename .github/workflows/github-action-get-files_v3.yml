@@ -1,4 +1,4 @@
-name: "Cross project models checker"
+name: "Cross project models checker v3"
 
 on:
   pull_request:
@@ -62,7 +62,7 @@ jobs:
             else
               echo "No matches found."
             fi
-            
+
           else
             echo "No matches found."
           fi
