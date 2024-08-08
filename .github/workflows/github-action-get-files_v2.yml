@@ -38,6 +38,8 @@ jobs:
           # Find matches between static models and changed models
           MATCHES=$(echo "$CHANGED_MODELS" | grep -F -x -f <(echo "$STATIC_MODELS"))
 
+          echo "Found matches: $MATCHES"
+
           if [ -n "$MATCHES" ]; then
             echo "Found matches: $MATCHES"
 
@@ -46,6 +48,7 @@ jobs:
 
             while IFS=',' read -r model reference origin_repo; do
               if echo "$MATCHES" | grep -q "$model"; then
+                echo "Adding to message: $model referred in $reference (origin repo: $origin_repo)"
                 MESSAGE+="* $model that referred in $reference (origin repo is $origin_repo)\n"
               fi
             done < <(tail -n +2 $STATIC_LIST)
