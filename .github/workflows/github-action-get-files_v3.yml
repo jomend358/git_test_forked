@@ -2,11 +2,13 @@ name: "Cross project models checker"
 
 on:
   pull_request:
+    types: [closed]
     branches:
       - main
 
 jobs:
   compare_files:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: Run checking process for cross project models
     steps:
