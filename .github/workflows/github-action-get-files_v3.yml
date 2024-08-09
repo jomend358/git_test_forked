@@ -2,11 +2,13 @@ name: "Cross project models checker"
 
 on:
   pull_request:
+    types: [closed]
     branches:
       - main
 
 jobs:
   compare_files:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: Run checking process for cross project models
     steps:
@@ -15,6 +17,10 @@ jobs:
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v44
+
+      - name: Get GitHub username
+        id: get-username
+        run: echo "username=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
 
       - name: Print changed files for debugging
         run: echo "${{ steps.changed-files.outputs.all_changed_files }}"
@@ -36,13 +42,14 @@ jobs:
             echo "Found matches: $MATCHES"
 
             PR_LINK="${{ github.event.pull_request.html_url }}"
-            MESSAGE="Hi <users/all>\nModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
+            GITHUB_USERNAME="${{ env.username }}"
+            MESSAGE="Hi <users/all>\n@${GITHUB_USERNAME} has made changes to models that are used in cross-project in this PR: $PR_LINK.\nThe PR has been merged, please check the following models that have been affected and adjust in the cross-project as needed:\n"
 
             while IFS=',' read -r model reference origin_repo; do
               for changed_model in $CHANGED_MODELS; do
                 if [ "$model" = "$changed_model" ]; then
                   echo "Adding to message: $model referred in $reference (origin repo: $origin_repo)"
-                  MESSAGE+="* \`$model\` that referred in \`$reference\` (origin repo is \`$origin_repo\`)\n"
+                  MESSAGE+="* \`$model\`, which is referrenced in \`$reference\` (originnally from \`$origin_repo\`)\n"
                 fi
               done
             done < <(tail -n +2 $STATIC_LIST)
