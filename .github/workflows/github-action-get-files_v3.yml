@@ -16,6 +16,10 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v44
 
+      - name: Get GitHub username
+        id: get-username
+        run: echo "username=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
+
       - name: Print changed files for debugging
         run: echo "${{ steps.changed-files.outputs.all_changed_files }}"
         
@@ -36,7 +40,7 @@ jobs:
             echo "Found matches: $MATCHES"
 
             PR_LINK="${{ github.event.pull_request.html_url }}"
-            MESSAGE="Hi <users/all>\nModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
+            MESSAGE="Hi <users/all>\n@${GITHUB_USERNAME} has made changes to models that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
 
             while IFS=',' read -r model reference origin_repo; do
               for changed_model in $CHANGED_MODELS; do
