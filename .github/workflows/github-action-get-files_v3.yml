@@ -21,19 +21,13 @@ jobs:
         
       - name: Compare with static list
         run: |
-          # Define paths for the static and generated CSV files
           STATIC_LIST="cross_project/list_of_cross_model_v3.csv"
-
-          # Extract columns from both CSV files, ignoring headers
           STATIC_MODELS=$(tail -n +2 $STATIC_LIST | cut -d',' -f1)
           STATIC_REFERENCES=$(tail -n +2 $STATIC_LIST | cut -d',' -f2)
           STATIC_ORIGIN_REPOS=$(tail -n +2 $STATIC_LIST | cut -d',' -f3)
 
           CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
           CHANGED_MODELS=$(echo "$CHANGED_FILES" | tr ' ' '\n' | awk -F/ '{print $NF}' | awk -F. '{print $1}' | sort | uniq)
-
-          # Re-initialize MATCHES to an empty string before finding the matches
-          MATCHES=""
 
           # Find matches between static models and changed models
           MATCHES=$(echo "$CHANGED_MODELS" | grep -F -x -f <(echo "$STATIC_MODELS") || true)
@@ -42,7 +36,7 @@ jobs:
             echo "Found matches: $MATCHES"
 
             PR_LINK="${{ github.event.pull_request.html_url }}"
-            MESSAGE="Alert V2\nHi <users/all>\nModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
+            MESSAGE="Hi <users/all>\nModels that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
 
             while IFS=',' read -r model reference origin_repo; do
               for changed_model in $CHANGED_MODELS; do
