@@ -41,7 +41,7 @@ jobs:
 
             PR_LINK="${{ github.event.pull_request.html_url }}"
             GITHUB_USERNAME="${{ env.username }}"
-            MESSAGE="Hi <users/all>\n@${GITHUB_USERNAME} has made changes to models that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
+            MESSAGE="Hi <users/all>\n**<span style='color:blue;'>@${GITHUB_USERNAME}</span>** has made changes to models that are used in cross project have been changed in this PR: $PR_LINK.\nThe models are mentioned below, please check it:\n"
 
             while IFS=',' read -r model reference origin_repo; do
               for changed_model in $CHANGED_MODELS; do
